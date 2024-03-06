@@ -24,6 +24,7 @@ buildscript {
         maven {
             url "https://plugins.gradle.org/m2/"
         }
+
     }
     dependencies {
         classpath group: 'com.google.protobuf', name:'protobuf-gradle-plugin', version: protobufGradlePlugin
@@ -64,6 +65,7 @@ allprojects {
             version = lombokVersion
         }
         dependencies {
+
             //These are compile time only dependencies needed accross all targets. Lombok uses them and may generate strange errors if they are missing.
             compileOnly group: 'com.github.spotbugs', name: 'spotbugs-annotations', version: spotbugsAnnotationsVersion
             testCompileOnly group: 'com.github.spotbugs', name: 'spotbugs-annotations', version: spotbugsAnnotationsVersion
@@ -455,7 +457,15 @@ project('segmentstore:contracts') {
 }
 
 project('segmentstore:storage') {
+    repositories {
+        flatDir {
+            dirs 'lib'
+        }
+    }
     dependencies {
+
+//        compile files(fileTree(dir: 'lib', include: ['*.jar']))
+
         compile project(':common')
         compile project(':shared:protocol')
         compile project(':segmentstore:contracts')
@@ -489,6 +499,11 @@ project('segmentstore:storage:impl') {
 }
 
 project ('bindings') {
+    repositories {
+        flatDir {
+            dirs 'lib'
+        }
+    }
     dependencies {
         // For HDFS
         compile group: 'org.apache.hadoop', name: 'hadoop-common', version: hadoopVersion, withoutLogger
@@ -496,6 +511,18 @@ project ('bindings') {
         compile group: 'org.apache.hadoop', name: 'hadoop-hdfs-client', version: hadoopVersion, withoutLogger
         testCompile group: 'org.apache.hadoop', name: 'hadoop-minicluster', version: hadoopVersion, withoutLogger
         testCompile group: 'ch.qos.logback', name: 'logback-classic', version: qosLogbackVersion
+
+        // For GEDS-HDFS
+
+//        compile group: 'com.ibm.geds.hdfs', name: 'geds-hdfs_2.12-geds1.2-hadoop3.2.0_1.2.1'
+//        compile files('lib/geds', 'lib/geds-1.2', 'lib/geds-hdfs_2.12-geds1.2-hadoop3.2.0_1.2.1')
+//        compile files('lib/geds-hdfs_2.12-geds1.2-hadoop3.2.0_1.2.1.jar!/com/ibm/geds/hdfs/GEDSHadoopFileSystem.class',
+//                'lib/geds-hdfs_2.12-geds1.2-hadoop3.2.0_1.2.1.jar!/com/ibm/geds/Constants.class',
+//                'lib/geds-hdfs_2.12-geds1.2-hadoop3.2.0_1.2.1.jar!/com/ibm/geds/GEDSInputStream.class',
+//                'lib/geds-hdfs_2.12-geds1.2-hadoop3.2.0_1.2.1.jar!/com/ibm/geds/GEDSOutputStream.class',
+//                'lib/geds-hdfs_2.12-geds1.2-hadoop3.2.0_1.2.1.jar!/com/ibm/geds/GEDSInstance.class')
+//        compile fileTree(dir: 'lib/geds-hdfs_2.12-geds1.2-hadoop3.2.0_1.2.1.jar!/com/ibm/geds/hdfs', includes: ['*.class'])
+        implementation fileTree(dir: 'lib', includes: ['*.jar'])
 
 
         // Adding JAXB API and the reference implementation as dependencies here, since they are not available
